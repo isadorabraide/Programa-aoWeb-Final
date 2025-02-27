@@ -34,12 +34,29 @@
     </footer>
 
     <script>
-        // Armazenar o último quizId no localStorage (você pode mover isso para o sucesso da criação em criar-quiz.ejs)
+       document.addEventListener('DOMContentLoaded', () => {
+        const token = localStorage.getItem('token');
+        const userName = localStorage.getItem('userName');
+        const authButton = document.getElementById('authButton');
+
+        if (token && userName) {
+            document.getElementById('userName').textContent = `Olá, ${userName}`;
+            authButton.innerHTML = '<button id="logoutBtn" class="btn-logout">Sair</button>';
+            document.getElementById('logoutBtn').addEventListener('click', () => {
+                localStorage.removeItem('token');
+                localStorage.removeItem('userName');
+                window.location.href = '/login';
+            });
+        } else {
+            authButton.innerHTML = '<a href="/login" class="btn">Fazer Login</a>';
+        }
+
         const urlParams = new URLSearchParams(window.location.search);
         const quizId = urlParams.get('id');
         if (quizId) {
             localStorage.setItem('lastQuizId', quizId);
         }
+    });
     </script>
 </body>
 </html>
