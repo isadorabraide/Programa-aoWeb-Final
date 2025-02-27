@@ -11,7 +11,7 @@
         <span>🔑 Cadastro</span>
         <div class="perfil-info">
             <span id="userName"></span>
-            <button id="logoutBtn" class="btn-logout">Sair</button>
+            <div id="authButton"></div>
         </div>
     </header>
 
@@ -49,44 +49,44 @@
 
     <script>
         document.getElementById('cadastroForm').addEventListener('submit', async (event) => {
-            event.preventDefault();
-
-            const formData = new FormData(event.target);
-            const data = {
-                nome: formData.get('nome'),
-                email: formData.get('email'),
-                password: formData.get('senha'),
-            };
-
-            const response = await fetch('/cadastro', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
-            });
-
-            const result = await response.json();
-            if (response.ok) {
-                alert(result.message);
-                window.location.href = '/login';
-            } else {
-                alert(result.error);
-            }
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        const data = {
+            nome: formData.get('nome'),
+            email: formData.get('email'),
+            password: formData.get('senha'),
+        };
+        const response = await fetch('/cadastro', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
         });
+        const result = await response.json();
+        if (response.ok) {
+            alert(result.message);
+            window.location.href = '/login';
+        } else {
+            alert(result.error);
+        }
+    });
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const userName = localStorage.getItem('userName');
-            if (userName) {
-                document.getElementById('userName').textContent = `Olá, ${userName}`;
-            }
+    document.addEventListener('DOMContentLoaded', () => {
+        const token = localStorage.getItem('token');
+        const userName = localStorage.getItem('userName');
+        const authButton = document.getElementById('authButton');
 
+        if (token && userName) {
+            document.getElementById('userName').textContent = `Olá, ${userName}`;
+            authButton.innerHTML = '<button id="logoutBtn" class="btn-logout">Sair</button>';
             document.getElementById('logoutBtn').addEventListener('click', () => {
                 localStorage.removeItem('token');
                 localStorage.removeItem('userName');
                 window.location.href = '/login';
             });
-        });
+        } else {
+            authButton.innerHTML = '<a href="/login" class="btn">Fazer Login</a>';
+        }
+    });
     </script>
 </body>
 </html>
