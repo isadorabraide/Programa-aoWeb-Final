@@ -12,7 +12,7 @@
        
         <div class="perfil-info">
             <span id="userName"></span>
-            <button id="logoutBtn" class="btn-logout">Sair</button>
+            <div id="authButton"></div> <!-- Contêiner para o botão dinâmico -->
         </div>
     </header>
 
@@ -79,79 +79,85 @@
 
     <script>
         document.getElementById("addPergunta").addEventListener("click", function() {
-            const container = document.getElementById("perguntas");
-            const num = container.children.length + 1;
-            const novaPergunta = `
-                <div class="pergunta">
-                    <input type="text" name="pergunta${num}" placeholder="Digite a pergunta..." required>
-                    <input type="text" name="resposta${num}a" placeholder="Opção A" required>
-                    <input type="text" name="resposta${num}b" placeholder="Opção B" required>
-                    <input type="text" name="resposta${num}c" placeholder="Opção C" required>
-                    <input type="text" name="resposta${num}d" placeholder="Opção D" required>
-                    <div class="resposta-correta">
-                        <label>Resposta correta:</label>
-                        <input type="radio" name="correct${num}" value="a" required> A
-                        <input type="radio" name="correct${num}" value="b"> B
-                        <input type="radio" name="correct${num}" value="c"> C
-                        <input type="radio" name="correct${num}" value="d"> D
-                    </div>
+        const container = document.getElementById("perguntas");
+        const num = container.children.length + 1;
+        const novaPergunta = `
+            <div class="pergunta">
+                <input type="text" name="pergunta${num}" placeholder="Digite a pergunta..." required>
+                <input type="text" name="resposta${num}a" placeholder="Opção A" required>
+                <input type="text" name="resposta${num}b" placeholder="Opção B" required>
+                <input type="text" name="resposta${num}c" placeholder="Opção C" required>
+                <input type="text" name="resposta${num}d" placeholder="Opção D" required>
+                <div class="resposta-correta">
+                    <label>Resposta correta:</label>
+                    <input type="radio" name="correct${num}" value="a" required> A
+                    <input type="radio" name="correct${num}" value="b"> B
+                    <input type="radio" name="correct${num}" value="c"> C
+                    <input type="radio" name="correct${num}" value="d"> D
                 </div>
-            `;
-            container.insertAdjacentHTML('beforeend', novaPergunta); // Adiciona sem sobrescrever
-        });
+            </div>
+        `;
+        container.insertAdjacentHTML('beforeend', novaPergunta);
+    });
 
-        document.getElementById('quizForm').addEventListener('submit', async (event) => {
-            event.preventDefault();
-
-            const formData = new FormData(event.target);
-            const perguntas = [];
-            for (let i = 1; i <= document.querySelectorAll('.pergunta').length; i++) {
-                const opcoes = [
-                    formData.get(`resposta${i}a`),
-                    formData.get(`resposta${i}b`),
-                    formData.get(`resposta${i}c`),
-                    formData.get(`resposta${i}d`),
-                ];
-                const correctIndex = ['a', 'b', 'c', 'd'].indexOf(formData.get(`correct${i}`));
-                perguntas.push({
-                    pergunta: formData.get(`pergunta${i}`),
-                    opcoes,
-                    respostaCorreta: opcoes[correctIndex],
-                });
-            }
-
-            const response = await fetch('/saveQuiz', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': localStorage.getItem('token'),
-                },
-                body: JSON.stringify({
-                    titulo: formData.get('quizTitle'),
-                    perguntas,
-                }),
+    document.getElementById('quizForm').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        const perguntas = [];
+        for (let i = 1; i <= document.querySelectorAll('.pergunta').length; i++) {
+            const opcoes = [
+                formData.get(`resposta${i}a`),
+                formData.get(`resposta${i}b`),
+                formData.get(`resposta${i}c`),
+                formData.get(`resposta${i}d`),
+            ];
+            const correctIndex = ['a', 'b', 'c', 'd'].indexOf(formData.get(`correct${i}`));
+            perguntas.push({
+                pergunta: formData.get(`pergunta${i}`),
+                opcoes,
+                respostaCorreta: opcoes[correctIndex],
             });
-
-            const result = await response.json();
-            if (response.ok) {
-                alert(result.message);
-                localStorage.setItem('lastQuizId', result.quizId);
-                window.location.href = `/quiz-salvo?id=${result.quizId}`;
-            } else {
-                alert(result.error);
-            }
-        });
-
-        const userName = localStorage.getItem('userName');
-        if (userName) {
-            document.getElementById('userName').textContent = `Olá, ${userName}`;
         }
 
-        document.getElementById('logoutBtn').addEventListener('click', () => {
-            localStorage.removeItem('token');
-            localStorage.removeItem('userName');
-            window.location.href = '/login';
+        const response = await fetch('/saveQuiz', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': localStorage.getItem('token'),
+            },
+            body: JSON.stringify({
+                titulo: formData.get('quizTitle'),
+                perguntas,
+            }),
         });
+
+        const result = await response.json();
+        if (response.ok) {
+            alert(result.message);
+            localStorage.setItem('lastQuizId', result.quizId);
+            window.location.href = `/quiz-salvo?id=${result.quizId}`;
+        } else {
+            alert(result.error);
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const token = localStorage.getItem('token');
+        const userName = localStorage.getItem('userName');
+        const authButton = document.getElementById('authButton');
+
+        if (token && userName) {
+            document.getElementById('userName').textContent = `Olá, ${userName}`;
+            authButton.innerHTML = '<button id="logoutBtn" class="btn-logout">Sair</button>';
+            document.getElementById('logoutBtn').addEventListener('click', () => {
+                localStorage.removeItem('token');
+                localStorage.removeItem('userName');
+                window.location.href = '/login';
+            });
+        } else {
+            authButton.innerHTML = '<a href="/login" class="btn">Fazer Login</a>';
+        }
+    });
     </script>
 </body>
 </html>
