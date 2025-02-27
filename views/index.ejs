@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Master 🎯</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <header>
+        <span>🎉 Bem-vindo ao Quiz Master! 🎯</span>
+        <div class="perfil-info">
+            <span id="userName"></span>
+            <button id="logoutBtn" class="btn-logout">Sair</button>
+        </div>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="/" class="active">🏠 Início</a></li>
+            <li><a href="/criar-quiz">📚 Criar Quiz</a></li>
+            <li><a href="/meus-quizzes">📝 Meus Quizzes</a></li>
+            <li><a href="/meus-resultados">📊 Meus Resultados</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div class="coluna">
+            <h2>🔥 Criar um Quiz</h2>
+            <p>Monte seu próprio quiz e desafie seus amigos! Personalize perguntas e escolha diferentes níveis de dificuldade. 🏆</p>
+        </div>
+
+        <div class="coluna centro">
+            <h2>🚀 Seu Destino Para Quizzes</h2>
+            <p>Divirta-se e teste seus conhecimentos em diversas categorias. Desafie-se e veja quem é o mestre dos quizzes! 🧠✨</p>
+        </div>
+
+        <div class="coluna">
+            <h2>📊 Estatísticas</h2>
+            <p>Acompanhe seu progresso, veja seus melhores acertos e compare com outros jogadores. Será que você consegue o topo do ranking? 🏅</p>
+        </div>
+    </div>
+
+    <footer>
+        🚀 Desenvolvido por Quiz Master | 2025
+    </footer>
+
+    <script>
+        // Exibe o nome do usuário
+        const userName = localStorage.getItem('userName');
+        if (userName) {
+            document.getElementById('userName').textContent = `Olá, ${userName}`;
+        }
+
+        // Botão de logout
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('token'); // Remove o token
+            localStorage.removeItem('userName'); // Remove o nome do usuário
+            window.location.href = '/login'; // Redireciona para a tela de login
+        });
+    </script>
+</body>
+</html>

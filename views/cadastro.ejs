@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <header>
+        <span>🔑 Cadastro</span>
+        <div class="perfil-info">
+            <span id="userName"></span>
+            <button id="logoutBtn" class="btn-logout">Sair</button>
+        </div>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="/">🏠 Início</a></li>
+            <li><a href="/criar-quiz">📚 Criar Quiz</a></li>
+            <li><a href="/meus-quizzes">📝 Meus Quizzes</a></li>
+            <li><a href="/meus-resultados">📊 Meus Resultados</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div class="coluna centro card">
+            <h2>Crie sua conta</h2>
+            <form id="cadastroForm">
+                <label for="nome">Nome:</label>
+                <input type="text" id="nome" name="nome" required>
+
+                <label for="email">E-mail:</label>
+                <input type="email" id="email" name="email" required>
+
+                <label for="senha">Senha:</label>
+                <input type="password" id="senha" name="senha" required>
+
+                <button type="submit" class="btn">Cadastrar</button>
+            </form>
+            <p>Já tem uma conta? <a href="/login">Faça login</a></p>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Quiz Master</p>
+    </footer>
+
+    <script>
+        document.getElementById('cadastroForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const formData = new FormData(event.target);
+            const data = {
+                nome: formData.get('nome'),
+                email: formData.get('email'),
+                password: formData.get('senha'),
+            };
+
+            const response = await fetch('/cadastro', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
+
+            const result = await response.json();
+            if (response.ok) {
+                alert(result.message);
+                window.location.href = '/login';
+            } else {
+                alert(result.error);
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const userName = localStorage.getItem('userName');
+            if (userName) {
+                document.getElementById('userName').textContent = `Olá, ${userName}`;
+            }
+
+            document.getElementById('logoutBtn').addEventListener('click', () => {
+                localStorage.removeItem('token');
+                localStorage.removeItem('userName');
+                window.location.href = '/login';
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,423 @@
+/* Reset básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', 'Arial', sans-serif; /* Fonte mais moderna */
+}
+
+/* Fundo geral */
+body {
+    background: #f4f7fa; /* Fundo claro e profissional */
+    color: #333; /* Texto em tom escuro para contraste */
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    line-height: 1.6;
+}
+
+/* Estilização do cabeçalho */
+header {
+    background: #2c3e50; /* Azul escuro elegante */
+    color: #fff;
+    padding: 15px 30px;
+    font-size: 1.5em;
+    font-weight: 600;
+    display: flex;
+    justify-content: space-between; /* Alinha o título à esquerda e perfil à direita */
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+}
+
+/* Estilização do menu de navegação */
+nav {
+    background: #34495e; /* Tom complementar ao cabeçalho */
+    padding: 10px 30px;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    gap: 30px; /* Espaçamento maior para um visual mais limpo */
+}
+
+nav ul li a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 1.1em;
+    padding: 8px 15px;
+    transition: background 0.3s;
+}
+
+nav ul li a:hover,
+nav ul li a.active {
+    background: #1abc9c; /* Verde-turquesa para destaque */
+    border-radius: 5px;
+}
+
+/* Container principal */
+.container {
+    display: flex;
+    justify-content: space-between;
+    padding: 30px; /* Reduzido para um layout mais compacto */
+    gap: 20px;
+    flex-grow: 1;
+    max-width: 1200px; /* Largura máxima para centralizar */
+    margin: 0 auto;
+}
+
+/* Colunas */
+.coluna {
+    flex: 1;
+    background: #fff; /* Fundo branco para contraste */
+    padding: 20px;
+    border-radius: 8px; /* Bordas mais sutis */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); /* Sombra leve */
+    min-height: 300px; /* Reduzido para um tamanho mais proporcional */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Estilização da coluna do meio */
+.centro {
+    flex: 2; /* Proporção ajustada */
+}
+
+/* Títulos das seções */
+h2 {
+    font-size: 1.6em;
+    margin-bottom: 20px;
+    color: #2c3e50; /* Cor consistente com o cabeçalho */
+}
+
+/* Parágrafos */
+p {
+    font-size: 1em;
+    color: #555; /* Tom mais suave para o texto */
+}
+
+/* Formulário */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Espaçamento maior para clareza */
+    width: 100%;
+    max-width: 500px;
+}
+
+label {
+    font-weight: 600;
+    color: #333;
+}
+
+input, textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd; /* Borda mais neutra */
+    border-radius: 5px;
+    font-size: 1em;
+    background: #fff; /* Fundo branco */
+    transition: border-color 0.3s;
+}
+
+input:focus, textarea:focus {
+    border-color: #1abc9c; /* Destaque ao focar */
+    outline: none;
+}
+
+textarea {
+    resize: vertical; /* Permite redimensionar apenas verticalmente */
+}
+
+/* Botões */
+button {
+    padding: 10px 20px; /* Ajustado para proporcionalidade */
+    font-size: 1em;
+    font-weight: 600;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+#addPergunta {
+    background: #3498db; /* Azul profissional */
+    color: #fff;
+}
+
+/* Botões */
+.btn {
+    background: #1abc9c; /* Verde-turquesa elegante */
+    color: #fff;
+    padding: 12px 25px; /* Maior para destacar */
+    font-size: 1.1em; /* Tamanho de fonte maior */
+    font-weight: 600;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none; /* Para links */
+    display: inline-block; /* Para alinhamento correto */
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s; /* Transição suave */
+}
+
+.btn:hover {
+    background: #16a085; /* Tom mais escuro ao passar o mouse */
+    transform: translateY(-2px); /* Leve elevação para interatividade */
+}
+
+button:hover {
+    background: #16a085; /* Tom mais escuro ao passar o mouse */
+}
+
+/* Botão Excluir */
+.btn-excluir {
+    background-color: #e74c3c; /* Vermelho profissional */
+    color: white;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9em;
+    margin-left: 10px;
+    transition: background 0.3s;
+}
+
+.btn-excluir:hover {
+    background-color: #c0392b;
+}
+
+/* Rodapé */
+footer {
+    background: #2c3e50; /* Mesmo tom do cabeçalho */
+    color: #fff;
+    padding: 15px;
+    text-align: center;
+    font-size: 0.9em;
+}
+
+/* Mensagem vazia */
+.mensagem-vazia {
+    font-size: 1.1em;
+    color: #777; /* Tom cinza para mensagens */
+    margin-bottom: 15px;
+}
+
+/* Lista de quizzes */
+.lista-quizzes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /* Espaçamento maior para organização */
+    justify-content: center;
+}
+
+.quiz-card {
+    background: #fff; /* Fundo branco */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    text-align: left; /* Alinhamento à esquerda para profissionalismo */
+    width: 280px; /* Aumentado para melhor apresentação */
+}
+
+.quiz-card h3 {
+    font-size: 1.3em;
+    margin-bottom: 10px;
+    color: #2c3e50;
+}
+
+.quiz-card p {
+    font-size: 1em;
+    margin-bottom: 15px;
+    color: #555;
+}
+
+.quiz-card .btn {
+    display: inline-block;
+    background: #1abc9c;
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.quiz-card .btn:hover {
+    background: #16a085;
+}
+
+.quiz-card div {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+/* Lista de resultados */
+.lista-resultados {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+.resultado-card {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    text-align: left;
+    width: 280px;
+}
+
+.resultado-card h3 {
+    font-size: 1.3em;
+    margin-bottom: 10px;
+    color: #2c3e50;
+}
+
+.resultado-card p {
+    font-size: 1em;
+    margin-bottom: 8px;
+    color: #555;
+}
+
+/* Lista de quizzes e resultados */
+.quiz-list, .resultados-list {
+    list-style: none;
+    padding: 0;
+}
+
+.quiz-item, .resultado-item {
+    background: #fff;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.quiz-item span, .resultado-item span {
+    font-size: 1.2em;
+    color: #333;
+}
+
+/* Estilização do perfil e botão de logout */
+.perfil-info {
+    display: flex;
+    align-items: center;
+    gap: 20px; /* Espaço entre nome e botão */
+}
+
+#userName {
+    font-size: 1.1em;
+    font-weight: 500;
+    color: #ecf0f1; /* Branco suave */
+}
+
+.btn-logout {
+    background: #e74c3c; /* Vermelho profissional */
+    color: #fff;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background 0.3s;
+}
+
+.btn-logout:hover {
+    background: #c0392b;
+}
+
+/* Botão "Meu Perfil" (mantido para compatibilidade, mas não usado) */
+.perfil-btn {
+    position: absolute;
+    left: 20px;
+    top: 20px;
+    background-color: transparent;
+    color: #eaeaea;
+    font-size: 25px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.perfil-btn:hover {
+    color: #1abc9c; /* Cor ajustada para consistência */
+}
+
+/* Perguntas no formulário de criação */
+.pergunta {
+    margin-bottom: 25px;
+    padding: 15px;
+    background: #fafafa; /* Fundo claro */
+    border-radius: 5px;
+    border: 1px solid #eee;
+}
+
+.pergunta label {
+    display: block;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.pergunta input[type="text"] {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.pergunta input[type="radio"] {
+    margin-right: 5px;
+}
+
+.resposta-correta {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Espaço entre os elementos */
+}
+
+.resposta-correta label {
+    margin: 0;
+    font-weight: normal;
+    color: #555;
+}
+
+.resposta-correta input[type="radio"] {
+    margin-right: 5px;
+}
+
+
+/* Estilização das opções na página de responder quiz */
+.opcoes {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Espaçamento reduzido entre alternativas */
+    margin-top: 10px;
+}
+
+.opcao {
+    display: flex;
+    align-items: center; /* Alinha a bolinha com o texto */
+}
+
+.opcao label {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Espaço entre a bolinha e o texto */
+    color: #333;
+    cursor: pointer;
+}
+
+.opcao input[type="radio"] {
+    margin: 0; /* Remove margens padrão */
+    width: 16px; /* Tamanho consistente da bolinha */
+    height: 16px;
+}

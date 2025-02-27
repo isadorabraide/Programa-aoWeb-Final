@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <header>
+        <span>🔑 Login</span>
+    </header>
+    
+    <div class="container">
+        <div class="coluna centro">
+            <h2>Faça seu login</h2>
+            <form id="loginForm">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+                
+                <label for="senha">Senha:</label>
+                <input type="password" id="senha" name="senha" required>
+                
+                <button type="submit" class="btn">Entrar</button>
+            </form>
+            <p>Não tem uma conta? <a href="/cadastro">Cadastre-se aqui</a></p>
+        </div>
+    </div>
+    
+    <footer>
+        <p>&copy; 2025 Quiz Master</p>
+    </footer>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const formData = new FormData(event.target);
+            const data = {
+                email: formData.get('email'),
+                password: formData.get('senha'),
+            };
+
+            const response = await fetch('/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
+
+            const result = await response.json();
+            if (response.ok) {
+                console.log('Token recebido:', result.token); // Log para verificar o token
+                localStorage.setItem('token', result.token);
+                localStorage.setItem('userName', result.userName);
+                console.log('Token armazenado no localStorage:', localStorage.getItem('token')); // Log para confirmar
+                window.location.href = '/';
+            } else {
+                alert(result.error);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meus Quizzes</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <header>
+        <span>📝 Meus Quizzes</span>
+        <div class="perfil-info">
+            <span id="userName"></span>
+            <button id="logoutBtn" class="btn-logout">Sair</button>
+        </div>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="/">🏠 Início</a></li>
+            <li><a href="/criar-quiz">📚 Criar Quiz</a></li>
+            <li><a href="/meus-quizzes" class="active">📝 Meus Quizzes</a></li>
+            <li><a href="/meus-resultados">📊 Meus Resultados</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div class="coluna centro">
+            <h2>Seus Quizzes Criados</h2>
+            <div id="quizzes-container">
+                <!-- Os quizzes serão inseridos aqui dinamicamente -->
+            </div>
+        </div>
+    </div>
+
+    <footer>© 2025 Quiz Master - Todos os direitos reservados.</footer>
+
+    <script>
+        async function carregarQuizzes() {
+            const token = localStorage.getItem('token');
+            const container = document.getElementById('quizzes-container');
+
+            if (!token) {
+                container.innerHTML = '<p class="mensagem-vazia">Faça login para ver seus quizzes.</p><a href="/login" class="btn">Fazer Login</a>';
+                return;
+            }
+
+            try {
+                const response = await fetch('/meus-quizzes-data', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    if (response.status === 401 || response.status === 400) {
+                        localStorage.removeItem('token');
+                        container.innerHTML = '<p class="mensagem-vazia">Sessão expirada. Faça login novamente.</p><a href="/login" class="btn">Fazer Login</a>';
+                    } else {
+                        throw new Error(errorText);
+                    }
+                    return;
+                }
+
+                const quizzes = await response.json();
+                if (quizzes.length === 0) {
+                    container.innerHTML = '<p class="mensagem-vazia">Você ainda não criou nenhum quiz.</p><a href="/criar-quiz" class="btn">Criar meu primeiro quiz</a>';
+                } else {
+                    const html = quizzes.map(quiz => `
+                        <div class="quiz-card" data-id="${quiz._id}">
+                            <h3>${quiz.titulo}</h3>
+                            <div>
+                                <a href="/responder-quiz?id=${quiz._id}" class="btn">Responder</a>
+                                <button class="btn-excluir" onclick="excluirQuiz('${quiz._id}')">Excluir</button>
+                            </div>
+                        </div>
+                    `).join('');
+                    container.innerHTML = `<div class="lista-quizzes">${html}</div>`;
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                container.innerHTML = `<p class="mensagem-vazia">Erro ao carregar quizzes: ${error.message}</p>`;
+            }
+        }
+
+        async function excluirQuiz(quizId) {
+            if (!confirm('Tem certeza que deseja excluir este quiz?')) return;
+
+            const token = localStorage.getItem('token');
+            try {
+                const response = await fetch(`/delete-quiz/${quizId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error(await response.text());
+                }
+
+                alert('Quiz excluído com sucesso!');
+                carregarQuizzes();
+            } catch (error) {
+                console.error('Erro:', error);
+                alert(error.message);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const userName = localStorage.getItem('userName');
+            if (userName) {
+                document.getElementById('userName').textContent = `Olá, ${userName}`;
+            }
+
+            document.getElementById('logoutBtn').addEventListener('click', () => {
+                localStorage.removeItem('token');
+                localStorage.removeItem('userName');
+                window.location.href = '/login';
+            });
+
+            carregarQuizzes();
+        });
+    </script>
+</body>
+</html>

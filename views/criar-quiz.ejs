@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criar Quiz | Guia Vestibular</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <header>
+        <span> Criar um Novo Quiz 🎯</span>
+       
+        <div class="perfil-info">
+            <span id="userName"></span>
+            <button id="logoutBtn" class="btn-logout">Sair</button>
+        </div>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="/">🏠 Início</a></li>
+            <li><a href="/criar-quiz" class="active">➕ Criar Quiz</a></li>
+            <li><a href="/meus-quizzes">📝 Meus Quizzes</a></li>
+            <li><a href="/meus-resultados">📊 Meus Resultados</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div class="coluna">
+            <h2>📌 Dicas para Criar um Bom Quiz</h2>
+            <p>💡 Use perguntas objetivas.</p>
+            <p>✅ Evite opções confusas.</p>
+            <p>🎨 Capriche na criatividade!</p>
+        </div>
+
+        <div class="coluna centro">
+            <h2>📝 Crie seu Quiz</h2>
+            <form id="quizForm">
+                <label for="quizTitle">📌 Nome do Quiz:</label>
+                <input type="text" id="quizTitle" name="quizTitle" required>
+
+                <label for="quizDesc">📖 Descrição:</label>
+                <textarea id="quizDesc" name="quizDesc" rows="3" required></textarea>
+
+                <h3>🛠️ Adicione Perguntas</h3>
+                <div id="perguntas">
+                    <div class="pergunta">
+                        <input type="text" name="pergunta1" placeholder="Digite a pergunta..." required>
+                        <input type="text" name="resposta1a" placeholder="Opção A" required>
+                        <input type="text" name="resposta1b" placeholder="Opção B" required>
+                        <input type="text" name="resposta1c" placeholder="Opção C" required>
+                        <input type="text" name="resposta1d" placeholder="Opção D" required>
+                        <div class="resposta-correta">
+                            <label>Resposta correta:</label>
+                            <input type="radio" name="correct1" value="a" required> A
+                            <input type="radio" name="correct1" value="b"> B
+                            <input type="radio" name="correct1" value="c"> C
+                            <input type="radio" name="correct1" value="d"> D
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" id="addPergunta">➕ Adicionar Pergunta</button>
+                <button type="submit" class="btn">💾 Salvar Quiz</button>
+            </form>
+        </div>
+
+        <div class="coluna">
+            <h2>🚀 Vantagens do Quiz Master</h2>
+            <p>✅ Simulados personalizados.</p>
+            <p>📊 Estatísticas sobre seu desempenho.</p>
+            <p>🏆 Melhore seus estudos com quizzes interativos!</p>
+        </div>
+    </div>
+
+    <footer>
+        © 2025 Quiz Master - Todos os direitos reservados.
+    </footer>
+
+    <script>
+        document.getElementById("addPergunta").addEventListener("click", function() {
+            const container = document.getElementById("perguntas");
+            const num = container.children.length + 1;
+            const novaPergunta = `
+                <div class="pergunta">
+                    <input type="text" name="pergunta${num}" placeholder="Digite a pergunta..." required>
+                    <input type="text" name="resposta${num}a" placeholder="Opção A" required>
+                    <input type="text" name="resposta${num}b" placeholder="Opção B" required>
+                    <input type="text" name="resposta${num}c" placeholder="Opção C" required>
+                    <input type="text" name="resposta${num}d" placeholder="Opção D" required>
+                    <div class="resposta-correta">
+                        <label>Resposta correta:</label>
+                        <input type="radio" name="correct${num}" value="a" required> A
+                        <input type="radio" name="correct${num}" value="b"> B
+                        <input type="radio" name="correct${num}" value="c"> C
+                        <input type="radio" name="correct${num}" value="d"> D
+                    </div>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', novaPergunta); // Adiciona sem sobrescrever
+        });
+
+        document.getElementById('quizForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const formData = new FormData(event.target);
+            const perguntas = [];
+            for (let i = 1; i <= document.querySelectorAll('.pergunta').length; i++) {
+                const opcoes = [
+                    formData.get(`resposta${i}a`),
+                    formData.get(`resposta${i}b`),
+                    formData.get(`resposta${i}c`),
+                    formData.get(`resposta${i}d`),
+                ];
+                const correctIndex = ['a', 'b', 'c', 'd'].indexOf(formData.get(`correct${i}`));
+                perguntas.push({
+                    pergunta: formData.get(`pergunta${i}`),
+                    opcoes,
+                    respostaCorreta: opcoes[correctIndex],
+                });
+            }
+
+            const response = await fetch('/saveQuiz', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': localStorage.getItem('token'),
+                },
+                body: JSON.stringify({
+                    titulo: formData.get('quizTitle'),
+                    perguntas,
+                }),
+            });
+
+            const result = await response.json();
+            if (response.ok) {
+                alert(result.message);
+                localStorage.setItem('lastQuizId', result.quizId);
+                window.location.href = `/quiz-salvo?id=${result.quizId}`;
+            } else {
+                alert(result.error);
+            }
+        });
+
+        const userName = localStorage.getItem('userName');
+        if (userName) {
+            document.getElementById('userName').textContent = `Olá, ${userName}`;
+        }
+
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('token');
+            localStorage.removeItem('userName');
+            window.location.href = '/login';
+        });
+    </script>
+</body>
+</html>

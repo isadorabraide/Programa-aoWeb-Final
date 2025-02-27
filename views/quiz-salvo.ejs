@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Salvo | Guia Vestibular</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <header>
+        <span>🎉 Quiz Criado com Sucesso! 🏆</span>
+        
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="/">🏠 Início</a></li>
+            <li><a href="/criar-quiz">➕ Criar Novo Quiz</a></li>
+            <li><a href="/meus-quizzes"> 📝 Meus Quizzes</a></li>
+            <li><a href="/meus-resultados">📊 Meus Resultados</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div class="coluna centro">
+            <h2>📌 Seu quiz foi salvo com sucesso!</h2>
+            <p>Agora você pode testá-lo e compartilhar com seus amigos! 🚀</p>
+            <button class="btn" onclick="window.location.href='/responder-quiz?id=' + localStorage.getItem('lastQuizId')">📝 Responder ao Quiz</button>
+        </div>
+    </div>
+
+    <footer>
+        © 2025 Quiz Master - Todos os direitos reservados.
+    </footer>
+
+    <script>
+        // Armazenar o último quizId no localStorage (você pode mover isso para o sucesso da criação em criar-quiz.ejs)
+        const urlParams = new URLSearchParams(window.location.search);
+        const quizId = urlParams.get('id');
+        if (quizId) {
+            localStorage.setItem('lastQuizId', quizId);
+        }
+    </script>
+</body>
+</html>
