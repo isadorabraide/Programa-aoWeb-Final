@@ -33,33 +33,44 @@
 
     <script>
         document.getElementById('loginForm').addEventListener('submit', async (event) => {
-            event.preventDefault();
-
-            const formData = new FormData(event.target);
-            const data = {
-                email: formData.get('email'),
-                password: formData.get('senha'),
-            };
-
-            const response = await fetch('/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
-            });
-
-            const result = await response.json();
-            if (response.ok) {
-                console.log('Token recebido:', result.token); // Log para verificar o token
-                localStorage.setItem('token', result.token);
-                localStorage.setItem('userName', result.userName);
-                console.log('Token armazenado no localStorage:', localStorage.getItem('token')); // Log para confirmar
-                window.location.href = '/';
-            } else {
-                alert(result.error);
-            }
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        const data = {
+            email: formData.get('email'),
+            password: formData.get('senha'),
+        };
+        const response = await fetch('/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
         });
+        const result = await response.json();
+        if (response.ok) {
+            localStorage.setItem('token', result.token);
+            localStorage.setItem('userName', result.userName);
+            window.location.href = '/';
+        } else {
+            alert(result.error);
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const token = localStorage.getItem('token');
+        const userName = localStorage.getItem('userName');
+        const authButton = document.getElementById('authButton');
+
+        if (token && userName) {
+            document.getElementById('userName').textContent = `Olá, ${userName}`;
+            authButton.innerHTML = '<button id="logoutBtn" class="btn-logout">Sair</button>';
+            document.getElementById('logoutBtn').addEventListener('click', () => {
+                localStorage.removeItem('token');
+                localStorage.removeItem('userName');
+                window.location.href = '/login';
+            });
+        } else {
+            authButton.innerHTML = '<a href="/login" class="btn">Fazer Login</a>';
+        }
+    });
     </script>
 </body>
 </html>
