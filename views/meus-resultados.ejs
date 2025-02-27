@@ -11,7 +11,7 @@
         <span>📊 Meus Resultados</span>
         <div class="perfil-info">
             <span id="userName"></span>
-            <button id="logoutBtn" class="btn-logout">Sair</button>
+            <div id="authButton"></div> <!-- Contêiner para o botão dinâmico -->
         </div>
     </header>
 
@@ -37,66 +37,71 @@
 
     <script>
         async function carregarResultados() {
-            const token = localStorage.getItem('token');
-            const container = document.getElementById('resultados-container');
-    
-            if (!token) {
-                container.innerHTML = '<p class="mensagem-vazia">Faça login para ver seus resultados.</p><a href="/login" class="btn">Fazer Login</a>';
+        const token = localStorage.getItem('token');
+        const container = document.getElementById('resultados-container');
+
+        if (!token) {
+            container.innerHTML = '<p class="mensagem-vazia">Faça login para ver seus resultados.</p><a href="/login" class="btn">Fazer Login</a>';
+            return;
+        }
+
+        try {
+            const response = await fetch('/meus-resultados-data', {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                if (response.status === 401 || response.status === 400) {
+                    localStorage.removeItem('token');
+                    container.innerHTML = '<p class="mensagem-vazia">Sessão expirada. Faça login novamente.</p><a href="/login" class="btn">Fazer Login</a>';
+                } else {
+                    throw new Error(errorText);
+                }
                 return;
             }
-    
-            try {
-                const response = await fetch('/meus-resultados-data', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                    },
-                });
-    
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    if (response.status === 401 || response.status === 400) {
-                        localStorage.removeItem('token');
-                        container.innerHTML = '<p class="mensagem-vazia">Sessão expirada. Faça login novamente.</p><a href="/login" class="btn">Fazer Login</a>';
-                    } else {
-                        throw new Error(errorText);
-                    }
-                    return;
-                }
-    
-                const resultados = await response.json();
-                if (resultados.length === 0) {
-                    container.innerHTML = '<p class="mensagem-vazia">Você ainda não respondeu a nenhum quiz.</p><a href="/" class="btn">Voltar para Início</a>';
-                } else {
-                    const html = resultados.map(resultado => `
-                        <div class="resultado-card">
-                            <h3>${resultado.quiz.titulo}</h3>
-                            <p><strong>Pontuação:</strong> ${resultado.pontuacao} pontos</p>
-                            <p><strong>Acertos:</strong> ${resultado.pontuacao} de ${resultado.totalPerguntas || resultado.quiz.perguntas.length} perguntas</p>
-                            <p><strong>Data:</strong> ${new Date(resultado.data).toLocaleDateString()}</p>
-                        </div>
-                    `).join('');
-                    container.innerHTML = `<div class="lista-resultados">${html}</div>`;
-                }
-            } catch (error) {
-                console.error('Erro:', error);
-                container.innerHTML = `<p class="mensagem-vazia">Erro ao carregar resultados: ${error.message}</p>`;
+
+            const resultados = await response.json();
+            if (resultados.length === 0) {
+                container.innerHTML = '<p class="mensagem-vazia">Você ainda não respondeu a nenhum quiz.</p><a href="/" class="btn">Voltar para Início</a>';
+            } else {
+                const html = resultados.map(resultado => `
+                    <div class="resultado-card">
+                        <h3>${resultado.quiz.titulo}</h3>
+                        <p><strong>Pontuação:</strong> ${resultado.pontuacao} pontos</p>
+                        <p><strong>Acertos:</strong> ${resultado.pontuacao} de ${resultado.totalPerguntas || resultado.quiz.perguntas.length} perguntas</p>
+                        <p><strong>Data:</strong> ${new Date(resultado.data).toLocaleDateString()}</p>
+                    </div>
+                `).join('');
+                container.innerHTML = `<div class="lista-resultados">${html}</div>`;
             }
+        } catch (error) {
+            console.error('Erro:', error);
+            container.innerHTML = `<p class="mensagem-vazia">Erro ao carregar resultados: ${error.message}</p>`;
         }
-    
-        document.addEventListener('DOMContentLoaded', () => {
-            const userName = localStorage.getItem('userName');
-            if (userName) {
-                document.getElementById('userName').textContent = `Olá, ${userName}`;
-            }
-    
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const token = localStorage.getItem('token');
+        const userName = localStorage.getItem('userName');
+        const authButton = document.getElementById('authButton');
+
+        if (token && userName) {
+            document.getElementById('userName').textContent = `Olá, ${userName}`;
+            authButton.innerHTML = '<button id="logoutBtn" class="btn-logout">Sair</button>';
             document.getElementById('logoutBtn').addEventListener('click', () => {
                 localStorage.removeItem('token');
                 localStorage.removeItem('userName');
                 window.location.href = '/login';
             });
-    
-            carregarResultados();
-        });
+        } else {
+            authButton.innerHTML = '<a href="/login" class="btn">Fazer Login</a>';
+        }
+
+        carregarResultados();
+    });
     </script>
 </body>
 </html>
