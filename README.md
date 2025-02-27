@@ -51,7 +51,7 @@ O Quiz Master está aberto a ideias! Encontrou um bug ou tem uma sugestão para 
 
 ## Criador
 
-- **Nome**: [Isadora Braide]  
+- **Nome**: Isadora Braide  
 - **Matéria**: Programação Web  
 - **Data**: Fevereiro de 2025  
 
