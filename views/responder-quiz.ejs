@@ -11,7 +11,7 @@
         <span>Responder Quiz 🎯</span>
         <div class="perfil-info">
             <span id="userName"></span>
-            <button id="logoutBtn" class="btn-logout">Sair</button>
+            <div id="authButton"></div> <!-- Contêiner para o botão dinâmico -->
         </div>
     </header>
 
@@ -40,93 +40,97 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                window.location.href = '/login';
-                return;
-            }
-    
-            const userName = localStorage.getItem('userName');
-            if (userName) {
-                document.getElementById('userName').textContent = `Olá, ${userName}`;
-            }
-    
+        const token = localStorage.getItem('token');
+        const userName = localStorage.getItem('userName');
+        const authButton = document.getElementById('authButton');
+
+        if (token && userName) {
+            document.getElementById('userName').textContent = `Olá, ${userName}`;
+            authButton.innerHTML = '<button id="logoutBtn" class="btn-logout">Sair</button>';
             document.getElementById('logoutBtn').addEventListener('click', () => {
                 localStorage.removeItem('token');
                 localStorage.removeItem('userName');
                 window.location.href = '/login';
             });
-    
-            const urlParams = new URLSearchParams(window.location.search);
-            const quizId = urlParams.get('id');
-    
-            if (!quizId) {
-                document.getElementById('quizTitle').textContent = 'Erro: Nenhum quiz selecionado.';
-                return;
-            }
-    
-            const response = await fetch(`/quiz/${quizId}`, {
-                headers: { 'Authorization': `Bearer ${token}` },
-            });
-            const quiz = await response.json();
-    
-            if (!response.ok) {
-                document.getElementById('quizTitle').textContent = 'Erro ao carregar o quiz.';
-                return;
-            }
-    
-            document.getElementById('quizTitle').textContent = quiz.titulo;
-            const perguntasContainer = document.getElementById('perguntas');
-            quiz.perguntas.forEach((pergunta, index) => {
-                const html = `
-                    <div class="pergunta">
-                        <h3>${index + 1}. ${pergunta.pergunta}</h3>
-                        <div class="opcoes">
-                            ${pergunta.opcoes.map((opcao, i) => `
-                                <div class="opcao">
-                                    <label>
-                                        <input type="radio" name="resposta${index}" value="${opcao}" required>
-                                        ${opcao}
-                                    </label>
-                                </div>
-                            `).join('')}
-                        </div>
+        } else {
+            authButton.innerHTML = '<a href="/login" class="btn">Fazer Login</a>';
+        }
+
+        if (!token) {
+            document.getElementById('quizTitle').textContent = 'Faça login para responder ao quiz.';
+            return;
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const quizId = urlParams.get('id');
+
+        if (!quizId) {
+            document.getElementById('quizTitle').textContent = 'Erro: Nenhum quiz selecionado.';
+            return;
+        }
+
+        const response = await fetch(`/quiz/${quizId}`, {
+            headers: { 'Authorization': `Bearer ${token}` },
+        });
+        const quiz = await response.json();
+
+        if (!response.ok) {
+            document.getElementById('quizTitle').textContent = 'Erro ao carregar o quiz.';
+            return;
+        }
+
+        document.getElementById('quizTitle').textContent = quiz.titulo;
+        const perguntasContainer = document.getElementById('perguntas');
+        quiz.perguntas.forEach((pergunta, index) => {
+            const html = `
+                <div class="pergunta">
+                    <h3>${index + 1}. ${pergunta.pergunta}</h3>
+                    <div class="opcoes">
+                        ${pergunta.opcoes.map((opcao, i) => `
+                            <div class="opcao">
+                                <label>
+                                    <input type="radio" name="resposta${index}" value="${opcao}" required>
+                                    ${opcao}
+                                </label>
+                            </div>
+                        `).join('')}
                     </div>
-                `;
-                perguntasContainer.innerHTML += html;
-            });
+                </div>
+            `;
+            perguntasContainer.innerHTML += html;
         });
-    
-        document.getElementById('quizResponseForm').addEventListener('submit', async (event) => {
-            event.preventDefault();
-    
-            const token = localStorage.getItem('token');
-            const urlParams = new URLSearchParams(window.location.search);
-            const quizId = urlParams.get('id');
-    
-            const formData = new FormData(event.target);
-            const respostas = [];
-            document.querySelectorAll('.pergunta').forEach((_, index) => {
-                respostas.push(formData.get(`resposta${index}`));
-            });
-    
-            const response = await fetch(`/submit-quiz/${quizId}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                },
-                body: JSON.stringify({ respostas }),
-            });
-    
-            const result = await response.json();
-            if (response.ok) {
-                alert(`Pontuação: ${result.pontuacao} de ${result.total}`);
-                window.location.href = '/meus-resultados';
-            } else {
-                alert(result.error);
-            }
+    });
+
+    document.getElementById('quizResponseForm').addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const token = localStorage.getItem('token');
+        const urlParams = new URLSearchParams(window.location.search);
+        const quizId = urlParams.get('id');
+
+        const formData = new FormData(event.target);
+        const respostas = [];
+        document.querySelectorAll('.pergunta').forEach((_, index) => {
+            respostas.push(formData.get(`resposta${index}`));
         });
+
+        const response = await fetch(`/submit-quiz/${quizId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify({ respostas }),
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+            alert(`Pontuação: ${result.pontuacao} de ${result.total}`);
+            window.location.href = '/meus-resultados';
+        } else {
+            alert(result.error);
+        }
+    });
     </script>
 </body>
 </html>
