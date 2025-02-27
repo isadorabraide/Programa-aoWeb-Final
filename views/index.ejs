@@ -11,7 +11,7 @@
         <span>🎉 Bem-vindo ao Quiz Master! 🎯</span>
         <div class="perfil-info">
             <span id="userName"></span>
-            <button id="logoutBtn" class="btn-logout">Sair</button>
+            <div id="authButton"></div> <!-- Contêiner para o botão dinâmico -->
         </div>
     </header>
 
@@ -46,18 +46,23 @@
     </footer>
 
     <script>
-        // Exibe o nome do usuário
+       document.addEventListener('DOMContentLoaded', () => {
+        const token = localStorage.getItem('token');
         const userName = localStorage.getItem('userName');
-        if (userName) {
-            document.getElementById('userName').textContent = `Olá, ${userName}`;
-        }
+        const authButton = document.getElementById('authButton');
 
-        // Botão de logout
-        document.getElementById('logoutBtn').addEventListener('click', () => {
-            localStorage.removeItem('token'); // Remove o token
-            localStorage.removeItem('userName'); // Remove o nome do usuário
-            window.location.href = '/login'; // Redireciona para a tela de login
-        });
+        if (token && userName) {
+            document.getElementById('userName').textContent = `Olá, ${userName}`;
+            authButton.innerHTML = '<button id="logoutBtn" class="btn-logout">Sair</button>';
+            document.getElementById('logoutBtn').addEventListener('click', () => {
+                localStorage.removeItem('token');
+                localStorage.removeItem('userName');
+                window.location.href = '/login';
+            });
+        } else {
+            authButton.innerHTML = '<a href="/login" class="btn">Fazer Login</a>';
+        }
+    });
     </script>
 </body>
 </html>
