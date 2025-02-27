@@ -11,7 +11,7 @@
         <span>📝 Meus Quizzes</span>
         <div class="perfil-info">
             <span id="userName"></span>
-            <button id="logoutBtn" class="btn-logout">Sair</button>
+            <div id="authButton"></div> <!-- Contêiner para o botão dinâmico -->
         </div>
     </header>
 
@@ -39,19 +39,19 @@
         async function carregarQuizzes() {
             const token = localStorage.getItem('token');
             const container = document.getElementById('quizzes-container');
-
+    
             if (!token) {
                 container.innerHTML = '<p class="mensagem-vazia">Faça login para ver seus quizzes.</p><a href="/login" class="btn">Fazer Login</a>';
                 return;
             }
-
+    
             try {
                 const response = await fetch('/meus-quizzes-data', {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                     },
                 });
-
+    
                 if (!response.ok) {
                     const errorText = await response.text();
                     if (response.status === 401 || response.status === 400) {
@@ -62,7 +62,7 @@
                     }
                     return;
                 }
-
+    
                 const quizzes = await response.json();
                 if (quizzes.length === 0) {
                     container.innerHTML = '<p class="mensagem-vazia">Você ainda não criou nenhum quiz.</p><a href="/criar-quiz" class="btn">Criar meu primeiro quiz</a>';
@@ -83,10 +83,10 @@
                 container.innerHTML = `<p class="mensagem-vazia">Erro ao carregar quizzes: ${error.message}</p>`;
             }
         }
-
+    
         async function excluirQuiz(quizId) {
             if (!confirm('Tem certeza que deseja excluir este quiz?')) return;
-
+    
             const token = localStorage.getItem('token');
             try {
                 const response = await fetch(`/delete-quiz/${quizId}`, {
@@ -95,11 +95,11 @@
                         'Authorization': `Bearer ${token}`,
                     },
                 });
-
+    
                 if (!response.ok) {
                     throw new Error(await response.text());
                 }
-
+    
                 alert('Quiz excluído com sucesso!');
                 carregarQuizzes();
             } catch (error) {
@@ -107,19 +107,24 @@
                 alert(error.message);
             }
         }
-
+    
         document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('token');
             const userName = localStorage.getItem('userName');
-            if (userName) {
+            const authButton = document.getElementById('authButton');
+    
+            if (token && userName) {
                 document.getElementById('userName').textContent = `Olá, ${userName}`;
+                authButton.innerHTML = '<button id="logoutBtn" class="btn-logout">Sair</button>';
+                document.getElementById('logoutBtn').addEventListener('click', () => {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('userName');
+                    window.location.href = '/login';
+                });
+            } else {
+                authButton.innerHTML = '<a href="/login" class="btn">Fazer Login</a>';
             }
-
-            document.getElementById('logoutBtn').addEventListener('click', () => {
-                localStorage.removeItem('token');
-                localStorage.removeItem('userName');
-                window.location.href = '/login';
-            });
-
+    
             carregarQuizzes();
         });
     </script>
